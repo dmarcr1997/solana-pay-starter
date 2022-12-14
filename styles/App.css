@@ -1,8 +1,26 @@
 .App {
   height: 100vh;
-  background-color: rgb(20, 20, 20);
+  background-image: url(../public/SatVaultBG.png);
+  background-size: cover;
   text-align: center;
   overflow: hidden;
+}
+
+.emojiImageStat{
+    background: 
+    repeating-radial-gradient(#000 0 0.0001%,#fff 0 0.0002%) 50% 0/2500px 2500px,
+    repeating-conic-gradient(#000 0 0.0001%,#fff 0 0.0002%) 60% 60%/2500px 2500px,
+    url(https://media.giphy.com/media/eSwGh3YK54JKU/giphy.gif);
+    background-blend-mode: difference;
+    animation: b .2s infinite alternate;
+    width: 40%;
+    height: 22rem;
+    margin-left: auto;
+    margin-right: auto;
+  
+}
+@keyframes b{
+  100% {background-position: 50% 0, 60% 50%}
 }
 
 .container {
@@ -60,10 +78,14 @@
 
 .connect-wallet-button {
   color: white;
-  background: -webkit-linear-gradient(left, #ff8867, #ff52ff);
+  background: -webkit-linear-gradient(left, #00bebe, #005678);
   background-size: 200% 200%;
   animation: gradient-animation 4s ease infinite;
   max-width: 300px;
+  box-shadow: 0 0 10px #00dcdc;
+  height: 50px;
+  font-size: 1.2em;
+  cursor: default;
 }
 
 .mint-button {
