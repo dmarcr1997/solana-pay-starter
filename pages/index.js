@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import HeadComponent from '../components/Head';
 import { PublicKey } from '@solana/web3.js';
 import { useWallet } from '@solana/wallet-adapter-react';
 import dynamic from "next/dynamic";
+import Product from "../components/Product";
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 // Constants
 const TWITTER_HANDLE = "_buildspace";
@@ -16,7 +18,18 @@ const App = () => {
   );
   
   // This will fetch the users' public key (wallet address) from any wallet we support
-const { publicKey } = useWallet();
+  const { publicKey } = useWallet();
+  const [products, setProducts] = useState([]);
+  useEffect(() => {
+    if (publicKey) {
+      fetch(`/api/fetchProducts`)
+        .then(response => response.json())
+        .then(data => {
+          setProducts(data);
+          console.log("Products", data);
+        });
+    }
+  }, [publicKey]);
   const renderNotConnectedContainer = () => (
     <div>
       <div className="emojiImageStat">
@@ -27,6 +40,15 @@ const { publicKey } = useWallet();
       </div>    
     </div>
   );
+
+  const renderItemBuyContainer = () => (
+    <div className="products-container">
+      {products.map((product) => (
+        <Product key={product.id} product={product} />
+      ))}
+    </div>
+  );
+  
   return (
     <div className="App">
       <HeadComponent/>
@@ -37,7 +59,7 @@ const { publicKey } = useWallet();
         </header>
 
         <main className="pageContent">
-           {publicKey ? 'Connected!' : renderNotConnectedContainer()}
+           {publicKey ? renderItemBuyContainer() : renderNotConnectedContainer()}
         </main>
 
         <div className="footer-container">
