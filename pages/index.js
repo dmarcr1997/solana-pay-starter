@@ -1,35 +1,27 @@
-import React, { useEffect, useState } from "react";
-import HeadComponent from '../components/Head';
-import { PublicKey } from '@solana/web3.js';
-import { useWallet } from '@solana/wallet-adapter-react';
-import dynamic from "next/dynamic";
+import React, { useState, useEffect} from "react";
+import CreateProduct from "../components/CreateProduct";
 import Product from "../components/Product";
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import HeadComponent from '../components/Head';
+import dynamic from "next/dynamic";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 // Constants
 const TWITTER_HANDLE = "_buildspace";
 const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 
 const App = () => {
+  const { publicKey } = useWallet();
+  const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false );
+  const [creating, setCreating] = useState(false);
+  const [products, setProducts] = useState([]);
+
   const WalletMultiButtonDynamic = dynamic(
     async () =>
       (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
     { ssr: false }
   );
   
-  // This will fetch the users' public key (wallet address) from any wallet we support
-  const { publicKey } = useWallet();
-  const [products, setProducts] = useState([]);
-  useEffect(() => {
-    if (publicKey) {
-      fetch(`/api/fetchProducts`)
-        .then(response => response.json())
-        .then(data => {
-          setProducts(data);
-          console.log("Products", data);
-        });
-    }
-  }, [publicKey]);
   const renderNotConnectedContainer = () => (
     <div>
       <div className="emojiImageStat">
@@ -40,6 +32,17 @@ const App = () => {
       </div>    
     </div>
   );
+
+  useEffect(() => {
+    if (publicKey) {
+      fetch(`/api/fetchProducts`)
+        .then(response => response.json())
+        .then(data => {
+          setProducts(data);
+          console.log("Products", data);
+        });
+    }
+  }, [publicKey]);
 
   const renderItemBuyContainer = () => (
     <div className="products-container">
@@ -56,9 +59,15 @@ const App = () => {
         <header className="header-container">
           <p className="header">📡 SatVault Payload Space Store 👾</p>
           <p className="sub-text">Get Your Payload into Space With Crypto</p>
+          {isOwner && (
+            <button className="create-product-button" onClick={() => setCreating(!creating)}>
+              {creating ? "Close" : "Create Product"}
+            </button>
+          )}
         </header>
 
         <main className="pageContent">
+           {creating && <CreateProduct />}
            {publicKey ? renderItemBuyContainer() : renderNotConnectedContainer()}
         </main>
 

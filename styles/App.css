@@ -3,7 +3,7 @@
   background-image: url(../public/SatVaultBG.png);
   background-size: cover;
   text-align: center;
-  overflow: hidden;
+  overflow-y: scroll;
 }
 
 .emojiImageStat{
@@ -21,6 +21,10 @@
 }
 @keyframes b{
   100% {background-position: 50% 0, 60% 50%}
+}
+
+main.pageContent {
+  overflow-y: scrollbar;
 }
 
 .container {

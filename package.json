@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@solana/pay": "^0.2.0",
+    "@solana/spl-token": "^0.3.6",
     "@solana/wallet-adapter-base": "^0.9.4",
     "@solana/wallet-adapter-react": "^0.15.3",
     "@solana/wallet-adapter-react-ui": "^0.9.5",
@@ -29,6 +30,7 @@
     "@solana/web3.js": "^1.36.0",
     "bignumber.js": "^9.0.2",
     "crypto-js": "^4.1.1",
+    "fs": "^0.0.1-security",
     "ipfs-core": "^0.14.3",
     "ipfs-http-client": "^56.0.3",
     "next": "^12.1.0",
