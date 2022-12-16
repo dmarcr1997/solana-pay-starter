@@ -18,6 +18,7 @@ export default function Buy({ itemID }) {
   const orderID = useMemo(() => Keypair.generate().publicKey, []); // Public key used to identify the order
 
   const [item, setItem] = useState(null); 
+
   const [loading, setLoading] = useState(false); // Loading state of all above
   const [status, setStatus] = useState(STATUS.Initial);
   
@@ -75,7 +76,7 @@ export default function Buy({ itemID }) {
     }
     checkPurchased();
   }, [publicKey, itemID]);
-  
+
   useEffect(() => {
     // Check if transaction was confirmed
     if (status === STATUS.Submitted) {
