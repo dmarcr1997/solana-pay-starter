@@ -1,8 +1,21 @@
 import React, { useState } from "react";
 import { create } from "ipfs-http-client";
 import styles from "../styles/CreateProduct.module.css";
+import { Buffer } from 'buffer';
 
-const client = create("https://ipfs.infura.io:5001/api/v0");
+const mySecret1 = process.env['IPFS_PROJECT_ID']
+const mySecret2 = process.env['IPFS_API_SECRET']
+
+const auth = 'Basic ' + Buffer.from(projectId + ':' + projectKey).toString('base64');
+const client = create({
+  host: `ipfs.infura.io`,
+  port: 5001,
+  protocol: 'https',
+  headers: {
+    authorization: auth
+  }
+});
+
 
 const CreateProduct = () => {
 
@@ -37,7 +50,7 @@ const CreateProduct = () => {
     try {
       // Combine product data and file.name
       const product = { ...newProduct, ...file };
-      console.log("Sending product to api",product);
+      console.log("Sending product to api", product);
       const response = await fetch("../api/addProduct", {
         method: "POST",
         headers: {
@@ -49,7 +62,9 @@ const CreateProduct = () => {
       if (response.status === 200) {
         alert("Product added!");
       }
-      else{
+      else {
+        console.log(data)
+        console.log(response)
         alert("Unable to add product: ", data.error);
       }
 
@@ -93,7 +108,7 @@ const CreateProduct = () => {
                 }}
               />
             </div>
-            
+
             <div className={styles.flex_row}>
               <input
                 className={styles.input}
@@ -103,7 +118,7 @@ const CreateProduct = () => {
                   setNewProduct({ ...newProduct, image_url: e.target.value });
                 }}
               />
-            </div>      
+            </div>
             <textarea
               className={styles.text_area}
               placeholder="Description here..."
@@ -128,7 +143,7 @@ const CreateProduct = () => {
                   setNewProduct({ ...newProduct, payload_max: e.target.value });
                 }}
               />
-            </div> 
+            </div>
             <div className={styles.flex_row}>
               <input
                 className={styles.input}
