@@ -1,10 +1,10 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Keypair, Transaction } from "@solana/web3.js";
 import { findReference, FindReferenceError } from "@solana/pay";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { InfinitySpin } from "react-loader-spinner";
 import IPFSDownload from "./IpfsDownload";
-import { addOrder, hasPurchased, fetchItem } from '../lib/api';
+import { addOrder, hasPurchased, fetchItem } from "../lib/api";
 
 const STATUS = {
   Initial: "Initial",
@@ -17,12 +17,10 @@ export default function Buy({ itemID }) {
   const { publicKey, sendTransaction } = useWallet();
   const orderID = useMemo(() => Keypair.generate().publicKey, []); // Public key used to identify the order
 
-  const [item, setItem] = useState(null); 
-
+  const [item, setItem] = useState(null); // IPFS hash & filename of the purchased item
   const [loading, setLoading] = useState(false); // Loading state of all above
-  const [status, setStatus] = useState(STATUS.Initial);
-  
-  // useMemo is a React hook that only computes the value if the dependencies change
+  const [status, setStatus] = useState(STATUS.Initial); // Tracking transaction status
+
   const order = useMemo(
     () => ({
       buyer: publicKey.toString(),
@@ -32,7 +30,7 @@ export default function Buy({ itemID }) {
     [publicKey, orderID, itemID]
   );
 
-  // Fetch the transaction object from the server 
+  // Fetch the transaction object from the server (done to avoid tampering)
   const processTransaction = async () => {
     setLoading(true);
     const txResponse = await fetch("../api/createTransaction", {
@@ -43,17 +41,13 @@ export default function Buy({ itemID }) {
       body: JSON.stringify(order),
     });
     const txData = await txResponse.json();
-    
-    // We create a transaction object
+
     const tx = Transaction.from(Buffer.from(txData.transaction, "base64"));
     console.log("Tx data is", tx);
-    
     // Attempt to send the transaction to the network
     try {
-      // Send the transaction to the network
       const txHash = await sendTransaction(tx, connection);
       console.log(`Transaction sent: https://solscan.io/tx/${txHash}?cluster=devnet`);
-      // Even though this could fail, we're just going to set it to true for now
       setStatus(STATUS.Submitted);
     } catch (error) {
       console.error(error);
@@ -63,7 +57,7 @@ export default function Buy({ itemID }) {
   };
 
   useEffect(() => {
-    // Check if this address has already purchased this item
+    // Check if this address already has already purchased this item
     // If so, fetch the item and set paid to true
     // Async function to avoid blocking the UI
     async function checkPurchased() {
@@ -88,8 +82,8 @@ export default function Buy({ itemID }) {
           if (result.confirmationStatus === "confirmed" || result.confirmationStatus === "finalized") {
             clearInterval(interval);
             setStatus(STATUS.Paid);
-            setLoading(false);
             addOrder(order);
+            setLoading(false);
             alert("Thank you for your purchase!");
           }
         } catch (e) {
@@ -105,6 +99,7 @@ export default function Buy({ itemID }) {
         clearInterval(interval);
       };
     }
+
     async function getItem(itemID) {
       const item = await fetchItem(itemID);
       setItem(item);
@@ -114,6 +109,7 @@ export default function Buy({ itemID }) {
       getItem(itemID);
     }
   }, [status]);
+
   if (!publicKey) {
     return (
       <div>
@@ -128,8 +124,9 @@ export default function Buy({ itemID }) {
 
   return (
     <div>
-      { status === STATUS.Paid ? (
-          <IPFSDownload filename="Mission.png" hash="QmZbNY3DjLpaPGrerUDpKtZkUb22QXjVit3r3857RHh2f6" cta="Download Mission Spec"/>
+      {/* Display either buy button or IPFSDownload component based on if Hash exists */}
+      {item ? (
+        <IPFSDownload hash={item.hash} filename={item.filename} />
       ) : (
         <button disabled={loading} className="buy-button" onClick={processTransaction}>
           Buy now 🠚

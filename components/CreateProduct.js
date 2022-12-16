@@ -3,14 +3,15 @@ import { create } from "ipfs-http-client";
 import styles from "../styles/CreateProduct.module.css";
 import { Buffer } from 'buffer';
 
-const projectId = process.env['IPFS_PROJECT_ID']
-const projectKey = process.env['IPFS_API_SECRET']
+const projectId = process.env.IPFS_PROJECT_ID;
+const projectKey = process.env.IPFS_API_SECRET;
 
 const auth = 'Basic ' + Buffer.from(projectId + ':' + projectKey).toString('base64');
 const client = create({
   host: `ipfs.infura.io`,
   port: 5001,
   protocol: 'https',
+  apiPath: '/api/v0',
   headers: {
     authorization: auth
   }

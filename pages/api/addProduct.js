@@ -7,7 +7,7 @@ export default function handler(req, res){
     console.log(req)
     try {
       console.log("body is ", req.body)
-      const { name, price, image_url, description, filename, hash } = req.body;
+      const { name, price, image_url, description, filename, hash, payload_use, payload_max, volume_use, volume_max, launch } = req.body;
   
       // Create new product ID based on last product ID
       const maxID = products.reduce((max, product) => Math.max(max, product.id), 0);
